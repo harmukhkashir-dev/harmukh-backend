@@ -900,19 +900,18 @@ async def get_products():
  async with httpx.AsyncClient() as client:
    response = await client.get(
        WC_URL,
-response = await client.get(
-   WC_URL,
-   auth=(WC_KEY, WC_SECRET),
-   params={
-       "per_page": 50
-   }
-)
-   if response.status_code != 200:
-       raise HTTPException(
-           status_code=response.status_code,
-           detail=f"WooCommerce error: {response.text}"
-       )
+       auth=(WC_KEY, WC_SECRET),
+       params={
+           "per_page": 50
+       }
+   )
+if response.status_code != 200:
+   raise HTTPException(
+       status_code=response.status_code,
+       detail=f"WooCommerce error: {response.text}"
+   )
 data = response.json()
+
    products = []
    for p in data:
        products.append({
