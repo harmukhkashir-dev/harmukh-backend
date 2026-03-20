@@ -911,7 +911,9 @@ if response.status_code != 200:
        detail=f"WooCommerce error: {response.text}"
    )
 data = response.json()
+
 products = []
+
 for p in data:
    products.append({
        "id": p["id"],
