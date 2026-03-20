@@ -899,28 +899,28 @@ WC_SECRET = os.getenv("WC_CONSUMER_SECRET")
 async def get_products():
  async with httpx.AsyncClient() as client:
    response = await client.get(
-       WC_URL,
-       auth=(WC_KEY, WC_SECRET),
-       params={
-           "per_page": 50
-       }
-   )
+   WC_URL,
+   auth=(WC_KEY, WC_SECRET),
+   params={
+       "per_page": 50
+   }
+)
 if response.status_code != 200:
    raise HTTPException(
        status_code=response.status_code,
        detail=f"WooCommerce error: {response.text}"
    )
 data = response.json()
-   products = []
-   for p in data:
-       products.append({
-           "id": p["id"],
-           "name": p["name"],
-           "price": int(float(p["price"])) if p["price"] else 0,
-           "image": p["images"][0]["src"] if p["images"] else None,
-           "stock": p["stock_status"] == "instock"
-       })
-   return products
+products = []
+for p in data:
+   products.append({
+       "id": p["id"],
+       "name": p["name"],
+       "price": int(float(p["price"])) if p["price"] else 0,
+       "image": p["images"][0]["src"] if len(p["images"]) > 0 else None,
+       "stock": p["stock_status"] == "instock"
+   })
+return products
 
 if __name__ == "__main__":
    import uvicorn
