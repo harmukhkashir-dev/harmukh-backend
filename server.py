@@ -890,8 +890,37 @@ async def startup_event():
 async def shutdown_db_client():
     client.close()
 
+# WooCommerce products sync endpoint
+WC_URL = "https://harmukhkashir.com/wp-json/wc/v3/products"
+WC_KEY = os.getenv("WC_CONSUMER_KEY")
+WC_SECRET = os.getenv("WC_CONSUMER_SECRET")
+
+@app.get("/products")
+async def get_products():
+   async with httpx.AsyncClient() as client:
+       response = await client.get(
+           WC_URL,
+           params={
+               "consumer_key": WC_KEY,
+               "consumer_secret": WC_SECRET,
+               "per_page": 50
+           }
+       )
+   data = response.json()
+   products = []
+   for p in data:
+       products.append({
+           "id": p["id"],
+           "name": p["name"],
+           "price": int(float(p["price"])) if p["price"] else 0,
+           "image": p["images"][0]["src"] if p["images"] else None,
+           "stock": p["stock_status"] == "instock"
+       })
+   return products
+
 if __name__ == "__main__":
    import uvicorn
    import os
    port = int(os.environ.get("PORT", 10000))
    uvicorn.run("server:app", host="0.0.0.0", port=port)
+
