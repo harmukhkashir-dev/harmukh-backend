@@ -922,8 +922,8 @@ for p in data:
        "image": p["images"][0]["src"] if len(p["images"]) > 0 else None,
        "stock": p["stock_status"] == "instock"
    })
-    
-   return products
+
+    return products
 
 if __name__ == "__main__":
    import uvicorn
